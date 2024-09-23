@@ -24,17 +24,25 @@ public class AnimationGenerator :EditorWindow
 
     private void OnEnable()
     {
+        
         m_animation_path = new List<string>();
+
+        m_animation_path.Add("Assets");
+        m_animation_path.Add("Animation");
+
+        m_animation_path_count=m_animation_path.Count;
+
         m_animator_controller_path = new List<string>();
+
+        m_animator_controller_path.Add("Assets");
+        m_animator_controller_path.Add("Animator");
+
+        m_animator_path_count = m_animator_controller_path.Count;  
+
         m_animation_state_list=new List<CustomPair<int, string>>();
     }
 
-    private void OnDisable()
-    {
-        m_animation_path.Clear();
-        m_animator_controller_path.Clear();
-        m_animation_state_list.Clear();
-    }
+
 
     private void GeneratePathField(List<string> list,int path_count)
     {
@@ -161,12 +169,15 @@ public class AnimationGenerator :EditorWindow
             return;
         }
 
-        m_animation_path.Add(list.name);
-        var animation_path = Path.Combine(m_animation_path.ToArray());
+        
+        var animation_path = m_animation_path.ToList();
+        animation_path.Add(list.name);
 
-        if(!Directory.Exists(animation_path))
+        var animation_path_combine = Path.Combine(animation_path.ToArray());
+
+        if(!Directory.Exists(animation_path_combine))
         {
-            Directory.CreateDirectory(animation_path);
+            Directory.CreateDirectory(animation_path_combine);
         }
 
         var animator_path = Path.Combine(m_animator_controller_path.ToArray());
@@ -207,7 +218,7 @@ public class AnimationGenerator :EditorWindow
             if (states.ContainsKey(i))
             {
                 AnimationUtility.SetObjectReferenceCurve(animation_clip,editor_curve_binding,key_frame_list.ToArray());
-                AssetDatabase.CreateAsset(animation_clip, Path.Combine(animation_path, states[i] + ".anim"));
+                AssetDatabase.CreateAsset(animation_clip, Path.Combine(animation_path_combine, states[i] + ".anim"));
                 var state = anim_controller.layers[0].stateMachine.AddState(states[i]);
                 state.motion = animation_clip;
 
@@ -222,7 +233,7 @@ public class AnimationGenerator :EditorWindow
 
         }
 
-
+        Debug.Log(animation_path_combine);
 
     }
 
@@ -367,10 +378,10 @@ public class AnimationGenerator :EditorWindow
 
 
     }
-    private float m_frame_rate=60;
-    private int m_animation_path_count, m_animator_path_count , m_animation_state_count;
-    private List<string> m_animation_path, m_animator_controller_path;
-    private List<CustomPair<int,string>> m_animation_state_list;
+      private float m_frame_rate=60;
+      private int m_animation_path_count, m_animator_path_count , m_animation_state_count;
+      private List<string> m_animation_path, m_animator_controller_path;
+      private List<CustomPair<int,string>> m_animation_state_list;
     
     
 }
